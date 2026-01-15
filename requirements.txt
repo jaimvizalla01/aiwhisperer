@@ -1,5 +1,5 @@
-# DocSanitizer - Dependencies
-# =============================
+# AIWhisperer - Dependencies
+# ===========================
 
 # Core dependencies (required)
 click>=8.0.0
@@ -51,10 +51,10 @@ gliner>=0.2.0
 # Quick install commands:
 # =============================================================================
 # Full install (recommended):
-#   pip install docsanitizer[spacy,ocr]
+#   pip install aiwhisperer[spacy,ocr]
 #   python -m spacy download nl_core_news_sm
 #
 # Or just the basics:
-#   pip install docsanitizer
+#   pip install aiwhisperer
 #   pip install marker-pdf  # for PDF conversion
 # =============================================================================

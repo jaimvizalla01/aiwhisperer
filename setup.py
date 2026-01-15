@@ -1,10 +1,10 @@
-"""Setup script for DocSanitizer."""
+"""Setup script for AIWhisperer."""
 from setuptools import setup, find_packages
 
 setup(
-    name="docsanitizer",
-    version="0.2.0",
-    description="Strip sensitive data from documents for AI analysis",
+    name="aiwhisperer",
+    version="0.3.0",
+    description="Complete pipeline for AI analysis of confidential documents",
     author="Public Domain",
     license="CC0-1.0",
     packages=find_packages(),
@@ -29,7 +29,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "docsanitizer=docsanitizer.cli:main",
+            "aiwhisperer=aiwhisperer.cli:main",
         ],
     },
     classifiers=[

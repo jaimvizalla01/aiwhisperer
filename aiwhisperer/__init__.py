@@ -1,10 +1,11 @@
 """
-DocSanitizer - Strip sensitive data from documents for AI analysis.
+AIWhisperer - Complete pipeline for AI analysis of confidential documents.
 
+Whisper your documents to AI without exposing sensitive data.
 Supports 6 languages: Dutch, English, German, French, Italian, Spanish.
 
 Usage:
-    from docsanitizer import encode, decode
+    from aiwhisperer import encode, decode
 
     # Encode document (replaces PII with placeholders)
     sanitized, mapping = encode(text, language='nl')
@@ -25,7 +26,7 @@ Anonymization strategies:
     - "hash": One-way hash
 """
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 from .encoder import encode, get_statistics
 from .decoder import decode

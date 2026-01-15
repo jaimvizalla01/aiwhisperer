@@ -1,4 +1,4 @@
-# DocSanitizer
+# AIWhisperer
 
 **A complete pipeline for analyzing confidential documents with AI—without leaking the data.**
 
@@ -6,7 +6,7 @@
 
 ## What This Tool Does
 
-DocSanitizer is a **complete workflow solution** for processing massive confidential documents (criminal investigations, medical records, legal files) with AI **without exposing the actual data**.
+AIWhisperer is a **complete workflow solution** for processing massive confidential documents (criminal investigations, medical records, legal files) with AI **without exposing the actual data**.
 
 **The complete pipeline:**
 
@@ -35,7 +35,7 @@ Once sanitized, you can ask AI to:
 - **Extract data** - "List all financial transactions with dates and amounts"
 - **Cross-reference** - "Which people appear in multiple documents?"
 
-The AI works with `PERSON_001`, `PHONE_002`, `PLACE_003`. After analysis, DocSanitizer converts the output back: `PERSON_001` → `John Smith`, `PHONE_002` → `+32 489 66 70 88`, etc.
+The AI works with `PERSON_001`, `PHONE_002`, `PLACE_003`. After analysis, AIWhisperer converts the output back: `PERSON_001` → `John Smith`, `PHONE_002` → `+32 489 66 70 88`, etc.
 
 **Result:** Full AI-powered analysis with real names—without ever uploading sensitive data.
 
@@ -127,7 +127,7 @@ flowchart TB
 
 ```bash
 # Install with spaCy and OCR support (recommended)
-pip install docsanitizer[spacy,ocr]
+pip install aiwhisperer[spacy,ocr]
 
 # Download Dutch language model
 python -m spacy download nl_core_news_sm
@@ -135,15 +135,15 @@ python -m spacy download nl_core_news_sm
 # Other languages available: en, de, fr, it, es
 
 # Check what's installed and what's missing
-docsanitizer check
+aiwhisperer check
 ```
 
 The `check` command shows exactly what's installed and how to fix missing dependencies:
 
 ```
-$ docsanitizer check
+$ aiwhisperer check
 
-DocSanitizer Dependency Check
+AIWhisperer Dependency Check
 ===================================
 Python: 3.10.5  (OK)
 
@@ -166,13 +166,13 @@ Language Models:
 ```bash
 # Step 1: Convert PDF to text (with OCR for scanned pages)
 # For large files, use --split to create multiple text files
-docsanitizer convert investigation.pdf --split --max-pages 500
+aiwhisperer convert investigation.pdf --split --max-pages 500
 
 # Creates: investigation_part1.txt, investigation_part2.txt, etc.
 
 # Step 2: Sanitize each text file (use same mapping across all)
-docsanitizer encode investigation_part1.txt --legend
-docsanitizer encode investigation_part2.txt --legend -m investigation_part1_mapping.json
+aiwhisperer encode investigation_part1.txt --legend
+aiwhisperer encode investigation_part2.txt --legend -m investigation_part1_mapping.json
 
 # Creates:
 #   investigation_part1_sanitized.txt  ← Send to AI
@@ -186,7 +186,7 @@ docsanitizer encode investigation_part2.txt --legend -m investigation_part1_mapp
 #         Ask AI to build timeline, find patterns, etc.
 
 # Step 4: Save AI output, then decode back to real names
-docsanitizer decode ai_analysis.txt -m investigation_part1_mapping.json
+aiwhisperer decode ai_analysis.txt -m investigation_part1_mapping.json
 
 # Result: Full analysis with real names restored
 ```
@@ -196,8 +196,8 @@ For smaller files (under ~50MB), you can skip the `--split` flag.
 ### Python API
 
 ```python
-from docsanitizer import encode, decode, Mapping
-from docsanitizer.converter import convert_pdf
+from aiwhisperer import encode, decode, Mapping
+from aiwhisperer.converter import convert_pdf
 
 # Convert PDF to text
 text, metadata = convert_pdf("investigation.pdf")
@@ -221,7 +221,7 @@ open("final_report.txt", "w").write(final)
 
 ## PDF Conversion
 
-DocSanitizer includes built-in PDF to text conversion with OCR for scanned documents.
+AIWhisperer includes built-in PDF to text conversion with OCR for scanned documents.
 
 ### OCR Backends
 
@@ -236,16 +236,16 @@ marker-pdf uses Surya OCR under the hood - currently one of the most accurate OC
 
 ```bash
 # Convert PDF (auto-selects best available backend)
-docsanitizer convert document.pdf
+aiwhisperer convert document.pdf
 
 # Force specific backend
-docsanitizer convert document.pdf --backend marker
+aiwhisperer convert document.pdf --backend marker
 
 # Split large PDFs into multiple text files
-docsanitizer convert large.pdf --split --max-pages 500
+aiwhisperer convert large.pdf --split --max-pages 500
 
 # Just show PDF info
-docsanitizer convert document.pdf --info
+aiwhisperer convert document.pdf --info
 ```
 
 ### Installing Tesseract (fallback)
@@ -282,7 +282,7 @@ apt install tesseract-ocr tesseract-ocr-nld tesseract-ocr-deu tesseract-ocr-fra
 
 ### Why not just upload to AI directly?
 
-**Security.** Criminal investigations, medical records, legal documents—you shouldn't upload these to cloud AI. DocSanitizer lets you get AI analysis without exposing the actual data.
+**Security.** Criminal investigations, medical records, legal documents—you shouldn't upload these to cloud AI. AIWhisperer lets you get AI analysis without exposing the actual data.
 
 **Size limits.** Most chatbots can't handle large files anyway:
 - ChatGPT: "Failed upload"
@@ -297,7 +297,7 @@ Yes, if there are unique identifiers. See the **⚠️ Important Warnings** sect
 
 ### What about scanned PDFs?
 
-DocSanitizer works on text. For scanned documents:
+AIWhisperer works on text. For scanned documents:
 1. First convert PDF to text using OCR (Claude Code can help with this)
 2. Then sanitize the text output
 3. The original article describes processing 565 scanned pages this way
@@ -375,24 +375,24 @@ The machine does what machines do well—pattern recognition, repetitive extract
 ### Anonymization Strategies
 
 ```bash
-docsanitizer encode doc.txt --strategy replace  # PERSON_001 (default, reversible)
-docsanitizer encode doc.txt --strategy redact   # [PERSON] (not reversible)
-docsanitizer encode doc.txt --strategy mask     # J** d* V**** (partial)
-docsanitizer encode doc.txt --strategy hash     # a1b2c3d4 (one-way)
+aiwhisperer encode doc.txt --strategy replace  # PERSON_001 (default, reversible)
+aiwhisperer encode doc.txt --strategy redact   # [PERSON] (not reversible)
+aiwhisperer encode doc.txt --strategy mask     # J** d* V**** (partial)
+aiwhisperer encode doc.txt --strategy hash     # a1b2c3d4 (one-way)
 ```
 
 ### Detection Backends
 
 ```bash
-docsanitizer encode doc.txt --backend hybrid    # spaCy + patterns (default)
-docsanitizer encode doc.txt --backend patterns  # patterns only (no spaCy needed)
+aiwhisperer encode doc.txt --backend hybrid    # spaCy + patterns (default)
+aiwhisperer encode doc.txt --backend patterns  # patterns only (no spaCy needed)
 ```
 
 ### Preview Detection
 
 ```bash
-docsanitizer encode doc.txt --dry-run  # Shows what would be replaced
-docsanitizer analyze doc.txt           # Full detection statistics
+aiwhisperer encode doc.txt --dry-run  # Shows what would be replaced
+aiwhisperer analyze doc.txt           # Full detection statistics
 ```
 
 ## Credits & Attribution

@@ -1,9 +1,9 @@
 """
-Command-line interface for DocSanitizer.
+Command-line interface for AIWhisperer.
 
 Usage:
-    docsanitizer encode document.txt
-    docsanitizer decode ai_output.txt --mapping mapping.json
+    aiwhisperer encode document.txt
+    aiwhisperer decode ai_output.txt --mapping mapping.json
 """
 
 import sys
@@ -13,7 +13,7 @@ try:
     import click
 except ImportError:
     print("Click not installed. Run: pip install click")
-    print("Or use the Python API directly: from docsanitizer import encode, decode")
+    print("Or use the Python API directly: from aiwhisperer import encode, decode")
     sys.exit(1)
 
 from . import __version__
@@ -25,7 +25,7 @@ from .mapper import Mapping
 @click.group()
 @click.version_option(version=__version__)
 def cli():
-    """DocSanitizer - Strip sensitive data from documents for AI analysis."""
+    """AIWhisperer - Complete pipeline for AI analysis of confidential documents."""
     pass
 
 
@@ -51,15 +51,15 @@ def encode_cmd(input_file, output, mapping, language, strategy, backend, dry_run
 
     Examples:
 
-        docsanitizer encode document.txt
+        aiwhisperer encode document.txt
 
-        docsanitizer encode document.txt -l en
+        aiwhisperer encode document.txt -l en
 
-        docsanitizer encode document.txt -o sanitized.txt -m mapping.json
+        aiwhisperer encode document.txt -o sanitized.txt -m mapping.json
 
-        docsanitizer encode document.txt --strategy mask
+        aiwhisperer encode document.txt --strategy mask
 
-        docsanitizer encode document.txt --dry-run
+        aiwhisperer encode document.txt --dry-run
     """
     input_path = Path(input_file)
 
@@ -128,9 +128,9 @@ def decode_cmd(input_file, mapping, output):
 
     Examples:
 
-        docsanitizer decode ai_output.txt -m mapping.json
+        aiwhisperer decode ai_output.txt -m mapping.json
 
-        docsanitizer decode ai_output.txt -m mapping.json -o final_report.txt
+        aiwhisperer decode ai_output.txt -m mapping.json -o final_report.txt
     """
     input_path = Path(input_file)
 
@@ -218,15 +218,15 @@ def convert_cmd(pdf_file, output_dir, backend, split, max_pages, info):
 
     Examples:
 
-        docsanitizer convert document.pdf
+        aiwhisperer convert document.pdf
 
-        docsanitizer convert document.pdf -o ./output/
+        aiwhisperer convert document.pdf -o ./output/
 
-        docsanitizer convert document.pdf --backend marker
+        aiwhisperer convert document.pdf --backend marker
 
-        docsanitizer convert large.pdf --split --max-pages 500
+        aiwhisperer convert large.pdf --split --max-pages 500
 
-        docsanitizer convert document.pdf --info
+        aiwhisperer convert document.pdf --info
     """
     from .converter import convert_pdf, get_pdf_info, get_available_converters
 
@@ -275,7 +275,7 @@ def convert_cmd(pdf_file, output_dir, backend, split, max_pages, info):
             click.echo(f"Output: {metadata['output_file']}")
         click.echo(f"Text length: {len(text):,} characters")
 
-        click.echo(f"\nNext step: docsanitizer encode {metadata.get('output_file', pdf_path.stem + '.txt')}")
+        click.echo(f"\nNext step: aiwhisperer encode {metadata.get('output_file', pdf_path.stem + '.txt')}")
 
     except ImportError as e:
         click.echo(f"\nError: {e}")
@@ -297,12 +297,12 @@ def check():
 
     Example:
 
-        docsanitizer check
+        aiwhisperer check
     """
     import platform
 
-    click.echo("\nDocSanitizer Dependency Check")
-    click.echo("=" * 35)
+    click.echo("\nAIWhisperer Dependency Check")
+    click.echo("=" * 32)
 
     # Python version
     py_version = platform.python_version()
