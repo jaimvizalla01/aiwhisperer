@@ -1,32 +1,34 @@
 # AIWhisperer
 
-**A complete pipeline for analyzing confidential documents with AI—without leaking the data.**
+**Whisper your documents to AI—without exposing sensitive data.**
 
 > *"4,713 pages. An experienced researcher would need five days to build a timeline. I did it in 20 minutes, during a coffee break."*
 
 ## What This Tool Does
 
-AIWhisperer is a **complete workflow solution** for processing massive confidential documents (criminal investigations, medical records, legal files) with AI **without exposing the actual data**.
+AIWhisperer lets you **whisper** confidential documents to cloud AI. The AI hears everything—names, connections, patterns—but never sees the real data.
+
+**How it works:** Your sensitive data stays local. Only sanitized placeholders go to the cloud. When AI whispers back its analysis, AIWhisperer restores the real names.
+
+```
+Your documents → [whisper sanitized data] → AI analyzes → [whisper back] → Real names restored
+```
 
 **The complete pipeline:**
 
-```
-170 MB PDF → Split into parts → OCR to text → Sanitize → Upload to AI → Download analysis → Decode
-```
-
 1. **Convert** - Extract text from PDFs (with OCR for scanned pages)
 2. **Split** - Automatically split large files into manageable chunks (500 pages each)
-3. **Encode** - Replace all names, phones, addresses with placeholders (`John Smith` → `PERSON_001`)
+3. **Whisper** - Replace all names, phones, addresses with placeholders (`John Smith` → `PERSON_001`)
 4. **Analyze** - Send the sanitized text to AI (NotebookLM, etc.) for analysis
-5. **Decode** - The tool automatically replaces placeholders back to real names in the AI output
+5. **Decode** - AIWhisperer restores real names in the AI output
 
 **The AI never sees the real data. You get the full analysis.**
 
-**Handles massive files:** The tool was built for a 170 MB, 4,713-page investigation file—far exceeding upload limits of ChatGPT, Gemini, and Claude.ai.
+**Handles massive files:** Built for a 170 MB, 4,713-page investigation file—far exceeding upload limits of ChatGPT, Gemini, and Claude.ai.
 
-## What Can AI Do With Sanitized Documents?
+## What Can You Whisper to AI?
 
-Once sanitized, you can ask AI to:
+Once your documents are sanitized, whisper questions to AI:
 
 - **Build timelines** - "Create a chronological timeline of all events"
 - **Find connections** - "Who communicated with whom? Map the relationships"
@@ -35,9 +37,9 @@ Once sanitized, you can ask AI to:
 - **Extract data** - "List all financial transactions with dates and amounts"
 - **Cross-reference** - "Which people appear in multiple documents?"
 
-The AI works with `PERSON_001`, `PHONE_002`, `PLACE_003`. After analysis, AIWhisperer converts the output back: `PERSON_001` → `John Smith`, `PHONE_002` → `+32 489 66 70 88`, etc.
+The AI works with `PERSON_001`, `PHONE_002`, `PLACE_003`. When it whispers back, AIWhisperer restores the real names: `PERSON_001` → `John Smith`, `PHONE_002` → `+32 489 66 70 88`, etc.
 
-**Result:** Full AI-powered analysis with real names—without ever uploading sensitive data.
+**Result:** Full AI-powered analysis with real names—your secrets never left your computer.
 
 ## Important Warnings
 
