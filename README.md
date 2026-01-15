@@ -30,7 +30,7 @@ The AI works with `PERSON_001`, `PHONE_002`, `PLACE_003`. After analysis, DocSan
 
 **Result:** Full AI-powered analysis with real names—without ever uploading sensitive data.
 
-## ⚠️ Important Warnings
+## Important Warnings
 
 **ALWAYS CHECK THE OUTPUT BEFORE UPLOADING TO AI.**
 
@@ -39,9 +39,9 @@ This tool is not perfect. Detection can miss things. Before uploading any saniti
 1. **Review the sanitized output** - Open the file and verify sensitive data is actually replaced
 2. **Use `--dry-run` first** - See what gets detected before committing
 3. **Check for unique identifiers** - Job titles, rare events, or specific descriptions can still identify people:
-   - ❌ `"PERSON_001, the mayor of Springfield"` → Still identifiable
-   - ❌ `"PERSON_001 arrested in Europe's largest drug bust"` → The event identifies the person
-   - ✅ `"PERSON_001 transferred money to PERSON_002"` → Safe
+   - BAD: `"PERSON_001, the mayor of Springfield"` → Still identifiable
+   - BAD: `"PERSON_001 arrested in Europe's largest drug bust"` → The event identifies the person
+   - OK: `"PERSON_001 transferred money to PERSON_002"` → Safe
 4. **Test with sample data first** - Before processing real confidential documents
 5. **You are responsible** - This tool assists, but YOU must verify the output is safe
 
