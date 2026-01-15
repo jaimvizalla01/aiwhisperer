@@ -141,7 +141,7 @@ open("final_report.txt", "w").write(final)
 
 ### Why not just upload to AI directly?
 
-**Security.** Criminal investigations, medical records, legal documents—you can't upload these to cloud AI. DocSanitizer lets you get AI analysis without exposing the actual data.
+**Security.** Criminal investigations, medical records, legal documents—you shouldn't upload these to cloud AI. DocSanitizer lets you get AI analysis without exposing the actual data.
 
 **Size limits.** Most chatbots can't handle large files anyway:
 - ChatGPT: "Failed upload"
