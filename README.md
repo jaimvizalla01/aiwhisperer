@@ -2,88 +2,114 @@
 
 Strip sensitive data from documents for safe AI analysis. Replace names, phone numbers, addresses, vehicles, and more with placeholders while preserving document structure. Decode AI output back to original values.
 
-**Supports 6 languages:** Dutch, English, German, French, Italian, Spanish
+**The AI never sees the real data.**
 
-Based on the workflow described by Henk van Ess in ["Speed reading a massive criminal investigation"](https://digitaldigging.org).
+## The Story Behind This Tool
+
+> *"4,713 pages. An experienced researcher would need five days to build a timeline. I did it in 20 minutes, during a coffee break."*
+
+This tool was born from a real investigation: a 170-megabyte cocaine smuggling case file containing court orders, wiretap transcripts, cell tower data, arrest warrants, bank statements, and interrogation protocols.
+
+The problem? No AI chatbot could handle it:
+- ChatGPT: "Failed upload"
+- Gemini: "File larger than 100 MB"
+- Claude.ai: "You may not upload files larger than 31 MB"
+- NotebookLM: Hidden 500,000-word limit
+
+The solution? **Anonymize locally, analyze in the cloud, decode locally.**
+
+Read the full story: **[Speed reading a massive criminal investigation with AI](https://www.digitaldigging.org/p/speed-reading-a-massive-criminal)** - *How to make sense of 4,713 pages in 20 minutes without leaking data*
 
 ## The Concept
 
 ```
-ORIGINAL:  "Jan de Vries reed met zijn Fiat Ducato naar Antwerpen via de N133"
-                    ↓ encode
-SANITIZED: "PERSON_001 reed met zijn VEHICLE_001 naar PLACE_001 via de ROAD_001"
-                    ↓ send to AI for analysis
-AI OUTPUT: "PERSON_001 used VEHICLE_001 to travel to PLACE_001 via ROAD_001..."
-                    ↓ decode
-DECODED:   "Jan de Vries used Fiat Ducato to travel to Antwerpen via N133..."
+BEFORE:    "On 16/10/2023, officers arrested John Smith at 123 Harbor Road.
+            He was hired by Marcus Johnson."
+
+AFTER:     "On 16/10/2023, officers arrested PERSON_001 at ADDRESS_001.
+            He was hired by PERSON_002."
+
+AI OUTPUT: "Timeline shows PERSON_001 arrested on 16/10/2023, connected to
+            PERSON_002 who runs COMPANY_001, COMPANY_002 and COMPANY_003"
+
+DECODED:   "Timeline shows John Smith arrested on 16/10/2023, connected to
+            Marcus Johnson who runs Hideout 1, Hideout 2 and Hideout 3"
 ```
 
-**What changes:** Sensitive values (names, locations, phones, emails, IBANs, vehicles, roads, etc.)
-**What stays:** Structure, relationships, context, amounts, dates
+**What changes:** Names, locations, phones, emails, IBANs, vehicles, addresses
+**What stays:** Structure, relationships, patterns, dates, amounts
 
-## Why Use This?
+## The Workflow
 
-- **Privacy-safe AI analysis** - Send documents to AI without exposing personal data
-- **Consistent placeholders** - Same person/place always gets the same placeholder
-- **Round-trip safe** - Decode AI output back to real names exactly
-- **Multi-language** - Native NER support for 6 European languages
-- **Large file support** - Handles documents of any size with automatic chunking
-- **Offline** - All processing happens locally
-
-## Installation
-
-```bash
-# Basic install (pattern-based detection only)
-pip install docsanitizer
-
-# Recommended: with spaCy for NER-based name/location detection
-pip install docsanitizer[spacy]
-
-# Then download language models you need:
-python -m spacy download nl_core_news_sm  # Dutch
-python -m spacy download en_core_web_sm   # English
-python -m spacy download de_core_news_sm  # German
-python -m spacy download fr_core_news_sm  # French
-python -m spacy download it_core_news_sm  # Italian
-python -m spacy download es_core_news_sm  # Spanish
+```
+┌─────────────────────────────────────────────────────────────┐
+│  YOUR COMPUTER (offline)                                    │
+│  ┌─────────────┐     ┌─────────────┐     ┌─────────────┐   │
+│  │  Original   │ ──▶ │ DocSanitizer│ ──▶ │  Sanitized  │   │
+│  │  Document   │     │   encode    │     │  Document   │   │
+│  └─────────────┘     └─────────────┘     └──────┬──────┘   │
+│                             │                    │          │
+│                             ▼                    │          │
+│                      mapping.json                │          │
+│                      (keep local!)               │          │
+└──────────────────────────────────────────────────┼──────────┘
+                                                   │
+                                                   ▼ upload
+┌─────────────────────────────────────────────────────────────┐
+│  CLOUD AI (NotebookLM, ChatGPT, Claude, etc.)              │
+│                                                             │
+│  "PERSON_001 transferred AMOUNT_001 to COMPANY_001..."     │
+│                                                             │
+│  AI builds timeline, finds patterns, identifies connections │
+│  AI has NO IDEA who PERSON_001 actually is                 │
+└──────────────────────────────────────────────────┬──────────┘
+                                                   │
+                                                   ▼ download
+┌─────────────────────────────────────────────────────────────┐
+│  YOUR COMPUTER (offline)                                    │
+│  ┌─────────────┐     ┌─────────────┐     ┌─────────────┐   │
+│  │ AI Analysis │ ──▶ │ DocSanitizer│ ──▶ │   Final     │   │
+│  │   Output    │     │   decode    │     │   Report    │   │
+│  └─────────────┘     └─────────────┘     └─────────────┘   │
+│                             ▲                               │
+│                             │                               │
+│                      mapping.json                           │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-For development:
-```bash
-git clone https://github.com/voelspriet/docsanitizer
-cd docsanitizer
-pip install -e ".[spacy,dev]"
-```
+**The AI isn't evidence. It's a flashlight.** It helps you find where to look—in 20 minutes instead of 5 days.
 
 ## Quick Start
+
+### Installation
+
+```bash
+# Install with spaCy support (recommended)
+pip install docsanitizer[spacy]
+
+# Download Dutch language model
+python -m spacy download nl_core_news_sm
+
+# Other languages available: en, de, fr, it, es
+```
 
 ### Command Line
 
 ```bash
-# Encode a document (uses hybrid detection by default)
-docsanitizer encode document.txt
+# Step 1: Sanitize your document
+docsanitizer encode investigation.txt --legend
 
-# Outputs:
-#   document_sanitized.txt  - Safe to send to AI
-#   document_mapping.json   - Keep locally for decoding
+# Creates:
+#   investigation_sanitized.txt  ← Send this to AI
+#   investigation_mapping.json   ← Keep this LOCAL
 
-# Include legend header (recommended for AI analysis)
-docsanitizer encode document.txt --legend
+# Step 2: Upload sanitized file to NotebookLM/ChatGPT/Claude
+#         Ask AI to build timeline, find patterns, etc.
 
-# Specify language (default: nl)
-docsanitizer encode document.txt -l en
+# Step 3: Save AI output, then decode back to real names
+docsanitizer decode ai_analysis.txt -m investigation_mapping.json
 
-# Use different anonymization strategy
-docsanitizer encode document.txt --strategy mask
-
-# After AI analysis, decode the output
-docsanitizer decode ai_output.txt -m document_mapping.json
-
-# Preview what would be detected (dry run)
-docsanitizer encode document.txt --dry-run
-
-# Analyze detection statistics
-docsanitizer analyze document.txt
+# Result: Full analysis with real names restored
 ```
 
 ### Python API
@@ -91,145 +117,118 @@ docsanitizer analyze document.txt
 ```python
 from docsanitizer import encode, decode, Mapping
 
-# Encode with hybrid detection (spaCy NER + patterns)
-text = "Jan de Vries reed met zijn BMW X5 naar Antwerpen via de A12"
+# Encode
+text = open("investigation.txt").read()
 sanitized, mapping = encode(text, language='nl')
-print(sanitized)
-# "PERSON_001 reed met zijn VEHICLE_001 naar PLACE_001 via de ROAD_001"
 
-# Save mapping for later
+# Save
+open("sanitized.txt", "w").write(sanitized)
 mapping.save("mapping.json")
 
-# ... send sanitized text to AI ...
+# ... send sanitized.txt to AI, get analysis back ...
 
-# Decode AI output
-ai_output = "PERSON_001 was seen near PLACE_001 at 15:30"
-decoded = decode(ai_output, mapping)
-print(decoded)
-# "Jan de Vries was seen near Antwerpen at 15:30"
-```
-
-### With Legend (Recommended for AI)
-
-```python
-from docsanitizer import encode_with_legend
-
-text = "..."  # Your document
-sanitized, mapping = encode_with_legend(text, language='nl')
-
-# sanitized now includes a header explaining all placeholder categories
-# This helps AI understand the document structure
-```
-
-The legend looks like:
-```
-============================================================
-DOCUMENT LEGEND - PLACEHOLDER KEY
-============================================================
-
-This document has been sanitized. Sensitive data has been
-replaced with placeholders. Each placeholder follows the
-format CATEGORY_NNN (e.g., PERSON_001, PLACE_002).
-
-PLACEHOLDER CATEGORIES:
-
-  PERSON_NNN : Person names (individuals) (15 unique)
-  PLACE_NNN : Locations (cities, towns, regions) (8 unique)
-  VEHICLE_NNN : Vehicle brands and models (cars, vans, trucks) (3 unique)
-  ROAD_NNN : Road/highway numbers (N-roads, A-roads, E-roads) (4 unique)
-  PHONE_NNN : Phone numbers (12 unique)
-
-IMPORTANT: Different numbers = different entities.
-  PERSON_001 and PERSON_002 are two different people.
-  PLACE_001 appearing twice means the SAME location.
-
-============================================================
+# Decode
+ai_output = open("ai_analysis.txt").read()
+final = decode(ai_output, mapping)
+open("final_report.txt", "w").write(final)
 ```
 
 ## What Gets Detected
 
-### Via spaCy NER (names & locations)
+| Category | Examples | What it catches |
+|----------|----------|-----------------|
+| **PERSON** | `Jan de Vries`, `El Mansouri Brahim` | Names via NER + context patterns |
+| **PLACE** | `Antwerpen`, `te Wuustwezel` | Cities, "te X", "richting X" patterns |
+| **PHONE** | `+32 489 66 70 88`, `052/26.08.60` | Belgian, Dutch, international formats |
+| **EMAIL** | `jan@example.com` | Standard email patterns |
+| **IBAN** | `BE44 3770 8065 6345` | European bank accounts |
+| **VEHICLE** | `Fiat Ducato`, `BMW X5` | 50+ car brands and models |
+| **ROAD** | `N133`, `A12`, `E19` | European road numbering |
+| **STREET** | `Stationstraat`, `Koning Albertlaan` | Dutch/Belgian street names |
+| **ADDRESS** | `Dorpstraat 31/301` | Full addresses with house numbers |
+| **DOB** | `26/04/1993` (near "geboren") | Dates of birth in context |
+| **ID** | `123456782` | Dutch BSN (validated), Belgian national numbers |
 
-| Category | Examples | Languages |
-|----------|----------|-----------|
-| **PERSON** | `Jan de Vries`, `El Mansouri Brahim`, `Marie Dupont` | All 6 |
-| **PLACE** | `Amsterdam`, `Antwerpen`, `Brussels`, `Berlin` | All 6 |
-| **ORG** | `Rabobank`, `Microsoft` (optional) | All 6 |
+## FAQ
 
-### Via Pattern Matching (structured data)
+### Why not just use ChatGPT directly?
 
-| Category | Examples | Confidence |
-|----------|----------|------------|
-| **EMAIL** | `jan@example.com`, `info@company.be` | 99% |
-| **PHONE** | `+32 489 66 70 88`, `052/26.08.60`, `(555) 123-4567` | 95% |
-| **IBAN** | `BE44 3770 8065 6345`, `NL91 ABNA 0417 1643 00` | 95% |
-| **VEHICLE** | `Fiat Ducato`, `BMW X5`, `Mercedes Sprinter`, `Toyota Corolla` | 92% |
-| **ROAD** | `N133`, `A12`, `E19`, `R1` (Belgian/Dutch/European roads) | 95% |
-| **STREET** | `Stationstraat`, `Koning Albertlaan`, `Grote Markt` | 88% |
-| **DOB** | `26/04/1993` (with birth context) | 90% |
-| **ID** | `123456782` (Dutch BSN with 11-proef), Belgian Rijksregisternummer | 85% |
+**Security.** Criminal investigations, medical records, legal documents—you can't upload these to cloud AI. DocSanitizer lets you get AI analysis without exposing the actual data.
 
-### Via Context Detection (foolproof approach)
+### Can't AI guess who PERSON_001 is from context?
 
-DocSanitizer uses context markers to catch locations that spaCy might miss:
+Be careful with unique identifiers:
+- ❌ `"PERSON_001, the mayor of Springfield"` → AI might guess
+- ❌ `"PERSON_001 arrested in Europe's largest drug bust"` → The event identifies the person
+- ✅ `"PERSON_001 transferred money to PERSON_002"` → Structure only, no identification
 
-| Pattern | Example | Detection |
-|---------|---------|-----------|
-| `te [PLACE]` | `te Wuustwezel` | Wuustwezel → PLACE |
-| `richting [PLACE]` | `richting Antwerpen` | Antwerpen → PLACE |
-| `naar [PLACE]` | `naar Brussel` | Brussel → PLACE |
-| `[POSTALCODE] [PLACE]` | `2990 Wuustwezel` | Wuustwezel → PLACE |
-| `[NAME] - [DATE]` | `Thompson - 15-03-1985` | Thompson → PERSON |
+For maximum paranoia, review the sanitized output before uploading.
 
-## Supported Vehicle Brands
+### What about scanned PDFs?
 
-European: Fiat, BMW, Mercedes, Audi, Volkswagen, Opel, Peugeot, Renault, Citroën, Volvo, Porsche, Ferrari, etc.
+DocSanitizer works on text. For scanned documents:
+1. First convert PDF to text using OCR (Claude Code can help with this)
+2. Then sanitize the text output
+3. The original article describes processing 565 scanned pages this way
 
-Asian: Toyota, Honda, Nissan, Mazda, Hyundai, Kia, Mitsubishi, Lexus, etc.
+### Why 6 languages?
 
-American: Ford, Chevrolet, Tesla, Jeep, Dodge, Cadillac, etc.
+Each language has its own spaCy NER model trained on native text:
+- `nl` Dutch - `nl_core_news_sm`
+- `en` English - `en_core_web_sm`
+- `de` German - `de_core_news_sm`
+- `fr` French - `fr_core_news_sm`
+- `it` Italian - `it_core_news_sm`
+- `es` Spanish - `es_core_news_sm`
 
-Commercial: Iveco, MAN, DAF, Scania, plus models like Ducato, Sprinter, Transit, Transporter, etc.
+### Is this admissible in court?
 
-## Detection Backends
+**Yes.** AI doesn't produce evidence—it produces a roadmap. You still verify everything against the original documents. Same way Ctrl+F doesn't break chain of custody, neither does pattern recognition on anonymized data.
 
-DocSanitizer uses a **hybrid approach** by default, combining the best of both methods:
+Quote from the original article:
+> *"Say the AI finds: 'PERSON_A met PERSON_B three days before the transfer to COMPANY_X.' That's not a conclusion you present in court. That's a hint where to look. You go back to the original documents. Page 847, page 1,203, page 3,421. That's where the evidence lives."*
 
-| Backend | What it detects | Pros | Cons |
-|---------|-----------------|------|------|
-| **hybrid** (default) | Names, locations via NER + structured data via patterns | Best accuracy, context-aware | Requires spaCy |
-| **patterns** | Structured data + context-based detection | Fast, no dependencies | May miss some names |
-| **spacy** | NER entities only | Good for names | Misses structured data |
+### How accurate is the detection?
+
+Detection uses multiple layers:
+1. **spaCy NER** - Context-aware name/location detection
+2. **Pattern matching** - High-confidence for structured data (phones, emails, IBANs)
+3. **Context markers** - Catches "te Wuustwezel", "richting Antwerpen" that NER might miss
+
+Always do a test run with `--dry-run` to see what gets detected.
+
+### What if it misses something?
+
+The `--dry-run` flag shows exactly what will be replaced. If something is missed:
+1. Check if it's a pattern we should add
+2. For one-off cases, manually edit before uploading
+3. Report issues on GitHub
+
+### Can I process multiple documents with consistent placeholders?
+
+Yes. Reuse the same mapping:
 
 ```python
-# Hybrid (recommended) - requires spaCy
-sanitized, mapping = encode(text, backend='hybrid', language='nl')
-
-# Patterns only - no dependencies needed
-sanitized, mapping = encode(text, backend='patterns')
+mapping = Mapping()
+for doc in documents:
+    sanitized, mapping = encode(doc, mapping=mapping)
+# PERSON_001 refers to the same person across all documents
 ```
 
-## Anonymization Strategies
+## Real-World Results
 
-| Strategy | Example | Use case |
-|----------|---------|----------|
-| **replace** (default) | `jan@example.com` → `EMAIL_001` | Reversible, for AI analysis |
-| **redact** | `jan@example.com` → `[EMAIL]` | Non-reversible, generic |
-| **mask** | `jan@example.com` → `j**@e******.com` | Partial visibility |
-| **hash** | `jan@example.com` → `a1b2c3d4` | One-way, consistent |
+From the original investigation:
+- **Input:** 170 MB PDF, 4,713 pages, 1,053,356 words
+- **After conversion:** 13.8 MB text (92% smaller)
+- **Processing time:** 20 minutes (vs 5 days manual)
+- **Output:** Complete timeline with all connections mapped
 
-```python
-# Default: reversible placeholders
-sanitized, _ = encode(text, strategy='replace')
-
-# Mask sensitive data partially
-sanitized, _ = encode(text, strategy='mask')
-```
+The machine does what machines do well—pattern recognition, repetitive extraction, organizing chaos. You do what humans do well—judgment, context, and knowing when something smells wrong.
 
 ## Supported Languages
 
-| Code | Language | spaCy Model |
-|------|----------|-------------|
+| Code | Language | Model |
+|------|----------|-------|
 | `nl` | Dutch | `nl_core_news_sm` |
 | `en` | English | `en_core_web_sm` |
 | `de` | German | `de_core_news_sm` |
@@ -237,127 +236,57 @@ sanitized, _ = encode(text, strategy='mask')
 | `it` | Italian | `it_core_news_sm` |
 | `es` | Spanish | `es_core_news_sm` |
 
-```bash
-# Dutch (default)
-docsanitizer encode document.txt -l nl
+## Advanced Options
 
-# English
-docsanitizer encode document.txt -l en
-
-# German
-docsanitizer encode document.txt -l de
-```
-
-## Advanced Usage
-
-### Large File Support
-
-DocSanitizer automatically handles large files by processing them in chunks:
-
-```python
-# Files larger than 500KB are automatically chunked
-# This happens transparently - just use the normal API
-sanitized, mapping = encode(large_document, language='nl')
-```
-
-### Batch Processing
-
-```python
-from docsanitizer import encode, Mapping
-
-# Reuse mapping across documents for consistent placeholders
-mapping = Mapping()
-
-for doc in documents:
-    sanitized, mapping = encode(doc, mapping=mapping)
-    process(sanitized)
-
-# Save once at the end
-mapping.save("batch_mapping.json")
-```
-
-### Include Organizations
-
-```python
-from docsanitizer.detectors import detect_hybrid
-
-# By default, organizations are not anonymized
-# Enable with include_org=True
-matches = detect_hybrid(text, include_org=True)
-```
-
-### Statistics
-
-```python
-from docsanitizer import encode, get_statistics
-
-sanitized, mapping = encode(text)
-stats = get_statistics(mapping)
-print(f"Found {stats['total_unique_values']} unique sensitive values")
-print(f"Categories: {list(stats['by_category'].keys())}")
-```
-
-## Workflow Example: Criminal Investigation Analysis
+### Anonymization Strategies
 
 ```bash
-# 1. Sanitize the investigation file
-docsanitizer encode investigation.txt --legend
-
-# 2. Send investigation_sanitized.txt to AI for analysis
-#    Ask AI to identify relationships, timelines, patterns
-
-# 3. Save AI output as analysis_result.txt
-
-# 4. Decode AI output back to real names
-docsanitizer decode analysis_result.txt -m investigation_mapping.json
-
-# Now you have the AI's analysis with real names restored
+docsanitizer encode doc.txt --strategy replace  # PERSON_001 (default, reversible)
+docsanitizer encode doc.txt --strategy redact   # [PERSON] (not reversible)
+docsanitizer encode doc.txt --strategy mask     # J** d* V**** (partial)
+docsanitizer encode doc.txt --strategy hash     # a1b2c3d4 (one-way)
 ```
 
-## Features Summary
+### Detection Backends
 
-- **Multi-language**: 6 languages with native NER models
-- **Hybrid detection**: spaCy NER + patterns + context-based detection
-- **Vehicle detection**: 50+ car brands and common models
-- **Road detection**: N/A/E/R European road numbering
-- **Context-aware**: Catches "te Wuustwezel", "richting Antwerpen", etc.
-- **Large file support**: Automatic chunking for files of any size
-- **Legend generation**: Header explaining placeholders for AI context
-- **Consistent mapping**: Same value always gets same placeholder
-- **Variations handled**: `Jan de Vries` and `DE VRIES, JAN` map to same person
-- **Round-trip safe**: Decode reverses encode exactly
-- **Multiple strategies**: Replace, redact, mask, or hash
-- **Offline**: All processing happens locally
+```bash
+docsanitizer encode doc.txt --backend hybrid    # spaCy + patterns (default)
+docsanitizer encode doc.txt --backend patterns  # patterns only (no spaCy needed)
+```
 
-## Limitations
+### Preview Detection
 
-- NER accuracy depends on spaCy model quality
-- First names without context may not be detected
-- Some edge cases may need manual review
-- Non-Western names may require context-based detection (automatic)
+```bash
+docsanitizer encode doc.txt --dry-run  # Shows what would be replaced
+docsanitizer analyze doc.txt           # Full detection statistics
+```
 
 ## Credits & Attribution
 
-### Concept & Requirements
-**Henk van Ess** ([digitaldigging.org](https://digitaldigging.org)) - Original workflow concept from "Speed reading a massive criminal investigation"
+### Original Story
+**[Speed reading a massive criminal investigation with AI](https://www.digitaldigging.org/p/speed-reading-a-massive-criminal)**
+*How to make sense of 4,713 pages in 20 minutes without leaking data*
+By Henk van Ess, January 2026
 
 ### Code Sources
-- **Anonymization strategies** based on [mstack.nl/blogs/anonymize-pii-llm](https://mstack.nl/blogs/anonymize-pii-llm/)
-- **spaCy NER integration** follows standard [spaCy documentation](https://spacy.io/usage/linguistic-features#named-entities)
-- **BSN validation** uses the standard Dutch [11-proef algorithm](https://nl.wikipedia.org/wiki/Burgerservicenummer#Controle)
-- **Presidio integration** based on [Microsoft Presidio](https://github.com/microsoft/presidio)
-- **GLiNER integration** based on [GLiNER](https://github.com/urchade/GLiNER)
+- Anonymization strategies based on [mstack.nl](https://mstack.nl/blogs/anonymize-pii-llm/)
+- spaCy NER integration follows [spaCy documentation](https://spacy.io/)
+- BSN validation uses Dutch [11-proef algorithm](https://nl.wikipedia.org/wiki/Burgerservicenummer)
+- Optional: [Microsoft Presidio](https://github.com/microsoft/presidio), [GLiNER](https://github.com/urchade/GLiNER)
 
 ### Added by Henk van Ess
-- Vehicle detection (`detect_vehicles()`)
-- Road detection (`detect_roads()`)
-- Context-based location detection (`detect_context_places()`, `detect_any_street()`)
-- Context-based name detection (`detect_names_by_context()`)
+- Vehicle brand/model detection
+- Road number detection (N/A/E/R)
+- Context-based location detection
+- Context-based name detection
 - Legend generation for AI context
 - Large file chunking support
-- Testing with real investigation documents
-- Documentation
+- Real-world testing and validation
 
 ## License
 
 CC0 1.0 Universal - Public Domain
+
+---
+
+*"That's the real skill nowadays: knowing which buttons to press, and knowing when to stop pressing and start thinking."*
