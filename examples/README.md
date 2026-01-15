@@ -37,3 +37,4 @@ In this sample, AIWhisperer detected:
 - 2 vehicle types
 
 The dates, amounts, and document structure remain intact for AI analysis.
+
