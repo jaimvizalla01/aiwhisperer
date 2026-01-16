@@ -17,7 +17,7 @@ You have a 170 MB investigation file. You try cloud AI:
 - Claude.ai: "Files larger than 31 MB not supported"
 - Gemini: "File larger than 100 MB"
 
-Your files are too big to fail—but too big to upload. AIWhisperer converts PDFs to text (92% smaller) and splits them into chunks cloud AI can handle.
+Your files are too big to fail—but too big to upload. AIWhisperer converts PDFs to text (upto 92% smaller) and splits them into chunks cloud AI can handle.
 
 **Problem 2: Too sensitive to upload, too slow to run locally**
 
@@ -409,3 +409,4 @@ CC0 1.0 Universal - Public Domain
 ---
 
 *"That's the real skill nowadays: knowing which buttons to press, and knowing when to stop pressing and start thinking."*
+
